@@ -1,0 +1,93 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  createdAt DateTime @default(now())
+  email     String?  @unique
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
+
+model Job {
+  company        Company?        @relation(fields: [companyId], references: [id])
+  companyId      String?
+  createdAt      DateTime        @default(now())
+  description    String?
+  experience     String?
+  id             String          @id @default(cuid())
+  jobType        EnumJobJobType?
+  redirectionUrl String?
+  role           String?
+  salaryDetail   SalaryDetail?   @relation(fields: [salaryDetailId], references: [id])
+  salaryDetailId String?
+  title          String?
+  updatedAt      DateTime        @updatedAt
+  vendor         String?
+  vendorJobId    String?
+}
+
+model Address {
+  companies Company[]
+  createdAt DateTime  @default(now())
+  data      Json?
+  id        String    @id @default(cuid())
+  location  Json?
+  name      String?
+  updatedAt DateTime  @updatedAt
+}
+
+model Tag {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  name      String?
+  updatedAt DateTime @updatedAt
+}
+
+model Company {
+  address   Address[]
+  createdAt DateTime  @default(now())
+  detail    String?
+  id        String    @id @default(cuid())
+  jobs      Job[]
+  name      String?
+  updatedAt DateTime  @updatedAt
+}
+
+model SalaryDetail {
+  amount    String?
+  createdAt DateTime                  @default(now())
+  currency  EnumSalaryDetailCurrency?
+  duration  EnumSalaryDetailDuration?
+  id        String                    @id @default(cuid())
+  jobs      Job[]
+  updatedAt DateTime                  @updatedAt
+}
+
+enum EnumJobJobType {
+  FullTime
+  PartTime
+  EventSpecific
+}
+
+enum EnumSalaryDetailCurrency {
+  Usd
+  Inr
+}
+
+enum EnumSalaryDetailDuration {
+  Yearly
+  Monthly
+  TotalValue
+  PerEvent
+}
